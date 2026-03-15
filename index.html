@@ -891,7 +891,7 @@ async function initApp() {
 // ──────────────────────────────────────────────
 async function loadConfig() {
   try {
-    const { data, error } = await supabase.from('configuracoes').select('*').eq('id', 1).single();
+    const { data, error } = await sbClient.from('configuracoes').select('*').eq('id', 1).single();
     if (data) {
       config.destinatarios_email = data.destinatarios_email || [];
       config.auditores = data.auditores || [];
@@ -902,7 +902,7 @@ async function loadConfig() {
 }
 
 async function saveConfig() {
-  await supabase.from('configuracoes').upsert({
+  await sbClient.from('configuracoes').upsert({
     id: 1,
     destinatarios_email: config.destinatarios_email,
     auditores: config.auditores
@@ -940,10 +940,10 @@ async function guardarOcorrencia() {
     const fotoUrls = [];
     for (const foto of selectedFotos) {
       const fname = `${Date.now()}_${Math.random().toString(36).slice(2)}.jpg`;
-      const { data: up, error: ue } = await supabase.storage
+      const { data: up, error: ue } = await sbClient.storage
         .from('fotos-ocorrencias').upload(fname, foto.file, { contentType: foto.file.type });
       if (!ue) {
-        const { data: pub } = supabase.storage.from('fotos-ocorrencias').getPublicUrl(fname);
+        const { data: pub } = sbClient.storage.from('fotos-ocorrencias').getPublicUrl(fname);
         fotoUrls.push(pub.publicUrl);
       }
     }
@@ -952,7 +952,7 @@ async function guardarOcorrencia() {
     const notas = document.getElementById('f-notas').value.trim();
     const auditor = document.getElementById('auditor-select').value || currentAuditor || 'Desconhecido';
 
-    const { error } = await supabase.from('ocorrencias').insert({
+    const { error } = await sbClient.from('ocorrencias').insert({
       data_hora: `${data}T${hora}:00`,
       auditor,
       categoria,
@@ -983,7 +983,7 @@ async function guardarOcorrencia() {
 async function updateEstado(id, estado) {
   const upd = { estado };
   if (estado === 'Resolvida') upd.data_resolucao = new Date().toISOString();
-  await supabase.from('ocorrencias').update(upd).eq('id', id);
+  await sbClient.from('ocorrencias').update(upd).eq('id', id);
   await loadOcorrencias();
   renderDashboard();
   renderHistorico();
@@ -992,7 +992,7 @@ async function updateEstado(id, estado) {
 
 async function deleteOcorrencia(id) {
   if (!confirm('Tens a certeza que queres apagar esta ocorrência?')) return;
-  await supabase.from('ocorrencias').delete().eq('id', id);
+  await sbClient.from('ocorrencias').delete().eq('id', id);
   await loadOcorrencias();
   renderDashboard();
   renderHistorico();
@@ -1318,7 +1318,7 @@ function saveConnection() {
 
 async function testConnection() {
   try {
-    const { data, error } = await supabase.from('configuracoes').select('id').single();
+    const { data, error } = await sbClient.from('configuracoes').select('id').single();
     if (error) throw error;
     document.getElementById('conn-status').textContent = '✓ Ligação OK — base de dados acessível';
     document.getElementById('conn-status').style.color = 'var(--ok)';

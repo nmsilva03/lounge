@@ -501,13 +501,13 @@ const _sb = {
 <body>
 
 <!-- SETUP SCREEN -->
-<div id="setup-screen">
+<div id="setup-screen" class="hidden">
   <div class="setup-box">
     <h1>AuditFood</h1>
     <p>Para começar, introduz as credenciais do teu projeto Supabase.<br>Estas ficam guardadas localmente neste browser.</p>
     <div class="field">
       <label>Project URL <span class="req">*</span></label>
-      <input type="text" id="setup-url" placeholder="https://xxxx.supabase.co">
+      <input type="text" id="setup-url" placeholder="https://xxxx.sbClient.co">
     </div>
     <div class="field">
       <label>Anon Public Key <span class="req">*</span></label>
@@ -739,7 +739,7 @@ const _sb = {
     <div class="form-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
       <div class="field">
         <label>Project URL</label>
-        <input type="text" id="admin-url" placeholder="https://xxxx.supabase.co">
+        <input type="text" id="admin-url" placeholder="https://xxxx.sbClient.co">
       </div>
       <div class="field">
         <label>Anon Key</label>
@@ -818,7 +818,7 @@ function updateSubcat() {
   }
 }
 
-const SB_URL = 'https://ijxjgueuapsiboryrrld.supabase.co';
+const SB_URL = 'https://ijxjgueuapsiboryrrld.sbClient.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlqeGpndWV1YXBzaWJvcnlycmxkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1Njg4MDAsImV4cCI6MjA4OTE0NDgwMH0.rFNL7cy_o7sQdpiP-vMaRpxkALWF0agpZI97aXdmvi8';
 
 // ──────────────────────────────────────────────
@@ -849,16 +849,8 @@ async function initApp() {
   const key = SB_KEY;
   const loadEl = document.getElementById('loading');
   const loadMsg = loadEl.querySelector('p');
+  document.getElementById('setup-screen').classList.add('hidden');
   loadEl.classList.remove('hidden');
-
-  loadMsg.textContent = 'A carregar biblioteca…';
-  const ready = await waitForSupabase();
-  if (!ready) {
-    loadMsg.textContent = '❌ Erro: biblioteca Supabase não carregou. Verifica a ligação à internet.';
-    loadMsg.style.color = 'var(--danger)';
-    return;
-  }
-
   loadMsg.textContent = 'A ligar ao Supabase…';
   try {
     _sb.init(url, key); _sb.storage._url = url; _sb.storage._key = key; sbClient = _sb;
